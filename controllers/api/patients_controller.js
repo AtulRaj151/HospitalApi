@@ -87,6 +87,7 @@ module.exports.createReport = async (req,res) => {
                         
                   return res.json(200,{
                       message:"success, Patient Report created!!",
+                      id: currentReport.patient._id,
                       mobile:currentReport.patient.mobile,
                       status:currentReport.status,
                       doctor:currentReport.patient.doctor.username,
@@ -125,7 +126,7 @@ module.exports.allReports = async (req,res) => {
             reports.map((report) =>{
                     console.log(report);
                     data.push({
-                         
+                          id: report.patient._id,
                           status:report.status,
                           doctor:report.patient.doctor.username,
                           date:new Date(report.createdAt).toLocaleDateString(),
@@ -192,7 +193,7 @@ module.exports.findStatus = async (req,res) =>{
                 reports.map((report) =>{
                         console.log(report);
                         data.push({
-                             
+                              id: report.patient._id,
                               mobile:report.patient.mobile,
                               doctor:report.patient.doctor.username,
                               date:new Date(report.createdAt).toLocaleDateString(),
