@@ -2,7 +2,10 @@
 const  Patient = require('../../models/patient');
 const Doctor = require('../../models/doctor');
 const Report = require('../../models/reports');
-const { findById } = require('../../models/patient');
+const { findById, populate } = require('../../models/patient');
+const { all } = require('../../routes');
+const { response } = require('express');
+const patient = require('../../models/patient');
 module.exports.register = async function(req,res) {
 
       console.log("Request Body ************",req.body);
@@ -47,7 +50,7 @@ module.exports.createReport = async (req,res) => {
 
           try{
            let patient = await Patient.findById(req.params.id);
-        //    console.log(patient);
+          
 
            //if patient exists in the database
 
@@ -63,10 +66,26 @@ module.exports.createReport = async (req,res) => {
                           status = "Positive-Admit";
                 }
     // create report of the patient in the database
-                    let report = await (await Report.create({status:status,patient:patient._id})).populate('patient','mobile')
-                    console.log(report);
+                    let report = await Report.create({status:status,patient:patient._id})
+                      let currentReport = await Report.findById(report._id)
+                      .populate({
+                          path:'patient',
+                          populate:{
+                              path:'doctor',
+                            
+                          }
+                      })
+                      
+                    //   console.log(currentReport)
+
+                        
                   return res.json(200,{
-                      message:"success, Patient Report created!!"
+                      message:"success, Patient Report created!!",
+                      mobile:currentReport.patient.mobile,
+                      status:currentReport.status,
+                      doctor:currentReport.patient.doctor.username,
+                      date: new Date(currentReport.createdAt).toUTCString()
+
                   })
                      
 
@@ -77,4 +96,50 @@ module.exports.createReport = async (req,res) => {
             })
         }
         
+}
+
+module.exports.allReports = async (req,res) => {
+
+        try {
+
+            
+        let reports = await Report.find({patient:req.params.id})
+        .sort([['createdAt','ascending']])
+        .populate({
+              path: 'patient',
+              populate:{
+                  path:'doctor'
+              }
+        });
+
+          let data = [];
+                 
+          
+          
+            reports.map((report) =>{
+                    console.log(report);
+                    data.push({
+                         
+                          status:report.status,
+                          doctor:report.patient.doctor.username,
+                          date:new Date(report.createdAt).toLocaleDateString(),
+                          time:new Date(report.createdAt).toLocaleTimeString()
+
+                    })
+            })
+        return res.json(200,{
+            message:'success,all reports of patient',
+            mobile: reports[0].patient.mobile,
+            data:data
+
+        })
+            
+        } catch (error) {
+            console.log("Error in finding Report");
+            return res.json(422,{
+                message:'error,could not found any patients'
+            })
+        }
+
+
 }
