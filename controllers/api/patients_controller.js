@@ -1,15 +1,13 @@
 
-const  Patient = require('../../models/patient');
-const Doctor = require('../../models/doctor');
-const Report = require('../../models/reports');
-const { findById, populate } = require('../../models/patient');
-const { all } = require('../../routes');
-const { response } = require('express');
-const patient = require('../../models/patient');
+const  Patient = require('../../models/patient');//importing Patient Schema
+const Doctor = require('../../models/doctor');//importing doctor Schema
+const Report = require('../../models/reports');//importing Report Schema
+
+//action to register the patients by the doctor using id as parameter
 module.exports.register = async function(req,res) {
 
-      console.log("Request Body ************",req.body);
-      console.log("request **********",req.user._id)
+    //   console.log("Request Body ************",req.body);
+    //   console.log("request **********",req.user._id)
 
       //check if patient already exists or not
 
@@ -23,13 +21,14 @@ module.exports.register = async function(req,res) {
                    mobile: req.body.mobile,
                    doctor:req.user._id
              });
+             //return res success along with id so that doctor can use for future reference
              return res.json(200,{
                  message:"success, UserCrated",
                  id:user._id
              })
 
          }else{
-             //if it exists in the database resturn the info of patients
+             //if it exists in the database resturn the info of patients along with id
              return res.json(200,{
                 message:"Success,Patient Already Exits",
                 mobile:patient.mobile,
@@ -37,25 +36,30 @@ module.exports.register = async function(req,res) {
             })
          }
         }catch(err){
+          //handle error
              console.log("Error")
+             return res.json(500,{
+                message:"Internal Server Error"
+            })
         }
 
      
       
 }
 
-//create report action
+//generate report action using the id of a patient
 
 module.exports.createReport = async (req,res) => {
 
           try{
+              //check patient in db using id of patient as params
            let patient = await Patient.findById(req.params.id);
           
 
            //if patient exists in the database
 
 
-            let status = "Negative";
+            let status = "Negative"; 
            if(patient){
                             //check the status code
                 if(req.body.status === 'TQ'){
@@ -67,17 +71,19 @@ module.exports.createReport = async (req,res) => {
                 }
     // create report of the patient in the database
                     let report = await Report.create({status:status,patient:patient._id})
+
+                    //find the report and populate the reference of patient and doctor in Report Schema
                       let currentReport = await Report.findById(report._id)
                       .populate({
-                          path:'patient',
+                          path:'patient',//first populate the patient in ReportSchema
                           populate:{
-                              path:'doctor',
+                              path:'doctor', //then populate doctor in Patient Schema
                             
                           }
                       })
                       
                     //   console.log(currentReport)
-
+               //send response to doctor with the follwing details of the patient
                         
                   return res.json(200,{
                       message:"success, Patient Report created!!",
@@ -98,24 +104,24 @@ module.exports.createReport = async (req,res) => {
         
 }
 
+//generate the all the reports of a patients from oldest to latest using id of patient
 module.exports.allReports = async (req,res) => {
 
         try {
 
-            
+            //find all reports of patients using the patient id
         let reports = await Report.find({patient:req.params.id})
-        .sort([['createdAt','ascending']])
+        .sort([['createdAt','ascending']]) //sort in ascending order using the field createdAt
         .populate({
-              path: 'patient',
+              path: 'patient',  //first populate the patient in ReportSchema
               populate:{
-                  path:'doctor'
+                  path:'doctor' //then populate doctor in Patient Schema
               }
         });
 
-          let data = [];
-                 
+          let data = []; // initialise empty array              
           
-          
+          //add all the relevent info in data
             reports.map((report) =>{
                     console.log(report);
                     data.push({
@@ -127,6 +133,7 @@ module.exports.allReports = async (req,res) => {
 
                     })
             })
+            // return data response to the user
         return res.json(200,{
             message:'success,all reports of patient',
             mobile: reports[0].patient.mobile,
@@ -135,6 +142,7 @@ module.exports.allReports = async (req,res) => {
         })
             
         } catch (error) {
+            //handle error
             console.log("Error in finding Report");
             return res.json(422,{
                 message:'error,could not found any patients'
@@ -143,7 +151,7 @@ module.exports.allReports = async (req,res) => {
 
 
 }
-
+// find the reports based on the Status using keywords
 module.exports.findStatus = async (req,res) =>{
 
     let status ;
@@ -169,17 +177,16 @@ module.exports.findStatus = async (req,res) =>{
               try {
 
                
-
+                //  find all report which are status
                 let reports  = await Report.find({status:status})
                 .populate({
-                      path:'patient',
+                      path:'patient', //first populate the patient in ReportSchema
                       populate:{
-                             path:'doctor'
+                             path:'doctor' //then populate doctor in Patient Schema
                       }
                 })
 
-                let data = [];
-                 
+                let data = []; //init data array                
                      
           
                 reports.map((report) =>{
@@ -193,10 +200,12 @@ module.exports.findStatus = async (req,res) =>{
     
                         })
                 })
+
+            
             return res.json(200,{
                 message:'success,all reports of patient',
                 status:status,
-                data:data
+                data:data //return data array
     
             })
 

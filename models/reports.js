@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose');//importing mongoose
+//report schema
 let reportSchema =new mongoose.Schema({
         status:{
               type:String,
