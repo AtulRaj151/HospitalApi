@@ -9,6 +9,7 @@ router.post('/doctors/login',doctorController.login);
 router.post('/patients/register',passport.authenticate('jwt',{session:false}),patientController.register);
 router.post('/patients/:id/create_report',passport.authenticate('jwt',{session:false}),patientController.createReport);
 router.post('/patients/:id/all_reports',patientController.allReports);
+router.post('/reports/:status',patientController.findStatus);
 
 
 module.exports = router;

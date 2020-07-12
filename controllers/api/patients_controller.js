@@ -143,3 +143,70 @@ module.exports.allReports = async (req,res) => {
 
 
 }
+
+module.exports.findStatus = async (req,res) =>{
+
+    let status ;
+    console.log(req.params.status)
+   //check the keyword and asign the status
+   if(req.params.status === 'TQ'){
+       status = "Travelled-Quarantine";                                
+   }else if(req.params.status === "SQ") {
+       status = "Symptoms-Quarantine";
+   }else if(req.params.status === "PA"){
+             status = "Positive-Admit";
+   }else if(req.params.status === 'N'){
+         status = "Negative";
+   }else{
+        return res.json(422,{
+              message:"Invalid Keyword"
+        })
+   }
+
+   
+   
+     //find the status in reports
+              try {
+
+               
+
+                let reports  = await Report.find({status:status})
+                .populate({
+                      path:'patient',
+                      populate:{
+                             path:'doctor'
+                      }
+                })
+
+                let data = [];
+                 
+                     
+          
+                reports.map((report) =>{
+                        console.log(report);
+                        data.push({
+                             
+                              mobile:report.patient.mobile,
+                              doctor:report.patient.doctor.username,
+                              date:new Date(report.createdAt).toLocaleDateString(),
+                              time:new Date(report.createdAt).toLocaleTimeString()
+    
+                        })
+                })
+            return res.json(200,{
+                message:'success,all reports of patient',
+                status:status,
+                data:data
+    
+            })
+
+
+                  
+              } catch (error) {
+                  console.log("Error",error);
+                  return res.json(422,{
+                      message:'error'
+                  })
+              }
+
+}
