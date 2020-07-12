@@ -39,7 +39,7 @@ module.exports.login = async (req,res) =>{
 
       return res.json(200,{
           message:"success,here is your Token, Keep it Safe!!",
-          token:jwt.sign(doctor.toJSON(),"HospitalApi",{expiresIn:'100000'})
+          token:jwt.sign(doctor.toJSON(),"HospitalApi",{expiresIn:1000000})
       })
     }catch(err){
         

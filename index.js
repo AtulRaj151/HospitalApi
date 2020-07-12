@@ -4,6 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 //import database
 const db = require('./config/mongoose');
+const passport = require('passport');
+const passportJWT = require('./config/passport_jwt_strategy');
 
 //use of bodyParser
 

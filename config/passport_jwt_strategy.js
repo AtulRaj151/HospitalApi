@@ -11,7 +11,8 @@ let opts = {
 passport.use(new JWTStrategy(opts,(payload,done) => {
 
             //find doctor in database
-          Doctor.find({id:payload.id},(err,doctor) => {
+            console.log(payload);
+          Doctor.findOne({username:payload.username},(err,doctor) => {
 
                if(err) {
                     return done(err,false);
