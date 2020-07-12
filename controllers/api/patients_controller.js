@@ -45,11 +45,36 @@ module.exports.register = async function(req,res) {
 
 module.exports.createReport = async (req,res) => {
 
+          try{
            let patient = await Patient.findById(req.params.id);
-           console.log(patient);
-           return res.json(200,{
-            message:"success",
-         
-        })
+        //    console.log(patient);
 
+           //if patient exists in the database
+
+
+            let status = "Negative";
+           if(patient){
+                            //check the status code
+                if(req.body.status === 'TQ'){
+                    status = "Travelled-Quarantine";                                
+                }else if(req.body.status === "SQ") {
+                    status = "Symptoms-Quarantine";
+                }else if(req.body.status === "PA"){
+                          status = "Positive-Admit";
+                }
+    // create report of the patient in the database
+                    let report = await (await Report.create({status:status,patient:patient._id})).populate('patient','mobile')
+                    console.log(report);
+                  return res.json(200,{
+                      message:"success, Patient Report created!!"
+                  })
+                     
+
+           }
+        }catch(err){
+            return res.json(422,{
+                message:"patient not found"
+            })
+        }
+        
 }

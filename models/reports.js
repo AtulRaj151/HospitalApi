@@ -6,10 +6,7 @@ let reportSchema =new mongoose.Schema({
                 'Symptoms-Quarantine', 'Positive-Admit'],
               default:'Negative'
         },
-        doctor:{
-             type:mongoose.Types.ObjectId,
-             ref:'Doctor'
-        },
+      
         patient:{
             type:mongoose.Types.ObjectId,
             ref:'Patient'
