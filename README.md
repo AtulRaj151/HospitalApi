@@ -43,3 +43,4 @@ patients
 - Clone the repository: git clone https://github.com/AtulRaj151/HospitalApi.git
 - Install the application: npm install
 - Start the server: npm start
+- visit localhost:8000/api/(ROUTES)
