@@ -24,12 +24,12 @@ patients
 - Date
 ### Routes
 ### - Doctor (Authentication and Authorisation using jwt)
- - /doctors/register → doctor register using unique username and password
+- /doctors/register → doctor register using unique username and password
 - /doctors/login → returns the JWT to be used by the doctor
 - /patients/register  →  register the patient 
- - post request requires mobile number of patient as body parameter
- - if patient exits returns the info of patient and its id
- - if not create new patient and returns its id
+   - post request requires mobile number of patient as body parameter
+   - if patient exits returns the info of patient and its id
+   - if not create new patient and returns its id
 - /patients/:id/create_report → create report of patient
   - requires status Keyword explained above [ N , TQ , SQ , PA ] as body parameter
   - returns the report of that patient
