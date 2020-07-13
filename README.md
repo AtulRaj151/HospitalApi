@@ -22,7 +22,7 @@ patients
       - SQ [Symotoms-Quarantine]
       - PA [Positive-Admit]
 - Date
-### Routes
+## Routes
 ### - Doctor (Authentication and Authorisation using jwt)
 - /doctors/register → doctor register using unique username and password
 - /doctors/login → returns the JWT to be used by the doctor
