@@ -29,7 +29,7 @@ module.exports.register = async function(req,res) {
 
          }else{
              //if it exists in the database resturn the info of patients along with id
-             return res.json(200,{
+             return res.json(422,{
                 message:"Success,Patient Already Exits",
                 mobile:patient.mobile,
                 id:patient._id
